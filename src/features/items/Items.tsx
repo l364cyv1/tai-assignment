@@ -3,7 +3,8 @@ import { fetchItems } from './itemSlice';
 import Item from './Item';
 import { useEffect, useRef } from 'react';
 import { goToPage } from '../pagination/paginationSlice';
-
+import { Link } from 'react-router-dom';
+import './Items.scss';
 
 function Items () {
     const { items, status } = useAppSelector(state => state.items);
@@ -13,6 +14,13 @@ function Items () {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            return;
+        }
+        if (search.length < 3 && search.length !== 0) {
+            return;
+        }
         if (pagination.page === 1) {
             // if pagination equals 1 already call fetchItems directly
             // as dispatching goToPage(1) won't trigger useEffect
@@ -24,10 +32,6 @@ function Items () {
     }, [search]);
 
     useEffect(() => {
-        if (isFirstRun.current) {
-            isFirstRun.current = false;
-            return;
-        }
         dispatch(fetchItems({name: search, page: pagination.page}));
     }, [pagination.page]);
 
@@ -40,7 +44,13 @@ function Items () {
 
     return (
         <>
-            { items.map(item => <Item key={item.id} id={ item.id } name={ item.name }/>) }
+            { items.map(item => {
+                return (
+                    <Link className={"item-link"} key={ item.id }  to={`/items/${item.id}`}>
+                        <Item id={ item.id } name={ item.name }/>
+                    </Link>
+                );
+            }) }
         </>
     );
 }
