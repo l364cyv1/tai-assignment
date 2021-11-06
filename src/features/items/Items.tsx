@@ -1,10 +1,12 @@
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { fetchItems } from './itemSlice';
+import { fetchItems, QueryParams } from './itemSlice';
 import Item from './Item';
 import { useEffect, useRef } from 'react';
 import { goToPage } from '../pagination/paginationSlice';
 import { Link } from 'react-router-dom';
 import './Items.scss';
+import Loader from '../loader/Loader';
+import { isMinSearchValid } from '../../app/utils';
 
 function Items () {
     const { items, status } = useAppSelector(state => state.items);
@@ -18,7 +20,7 @@ function Items () {
             isFirstRun.current = false;
             return;
         }
-        if (search.length < 3 && search.length !== 0) {
+        if (!isMinSearchValid(search)) {
             return;
         }
         if (pagination.page === 1) {
@@ -32,25 +34,42 @@ function Items () {
     }, [search]);
 
     useEffect(() => {
-        dispatch(fetchItems({name: search, page: pagination.page}));
+        let queryParams: QueryParams = {
+            page: pagination.page,
+        }
+        if (isMinSearchValid(search)) {
+            queryParams = {
+                ...queryParams,
+                name: search,
+            }
+        }
+        dispatch(fetchItems(queryParams));
     }, [pagination.page]);
 
 
     if (status === 'loading') {
         return (
-            <div>Loading...</div>
+            <Loader/>
         );
     }
 
     return (
         <>
-            { items.map(item => {
-                return (
-                    <Link className={"item-link"} key={ item.id }  to={`/items/${item.id}`}>
-                        <Item id={ item.id } name={ item.name }/>
-                    </Link>
-                );
-            }) }
+            <table>
+                <tbody>
+                    { items.map(item => {
+                        return (
+                            <tr key={ item.id }>
+                                <td>
+                                    <Link className={"item-link"} to={`/items/${item.id}`}>
+                                        <Item id={ item.id } name={ item.name }/>
+                                    </Link>
+                                </td>
+                            </tr>
+                        );
+                    }) }
+                </tbody>
+            </table>
         </>
     );
 }

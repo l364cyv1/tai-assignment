@@ -1,13 +1,17 @@
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { search } from './searchSlice';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useState } from 'react';
+import { isMinSearchValid } from '../../app/utils';
 
 
 function Search() {
     const dispatch = useAppDispatch();
     const { q } = useAppSelector(state => state.search);
+    const [showHint, setHint] = useState(!isMinSearchValid(q));
     function handleSearchInput(e: ChangeEvent<HTMLInputElement>) {
-        dispatch(search(e.target.value));
+        const qTerm = e.target.value;
+        setHint(!isMinSearchValid(qTerm));
+        dispatch(search(qTerm));
     }
     return (
         <>
@@ -17,6 +21,7 @@ function Search() {
                 placeholder={"Search characters by name"}
                 defaultValue={q}
             />
+            { showHint && <p>Type at least 3 chars to filter characters.</p> }
         </>
     );
 }

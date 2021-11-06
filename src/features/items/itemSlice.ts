@@ -34,7 +34,7 @@ interface ItemsResponse {
     results: ItemInterface[],
 }
 
-interface QueryParams {
+export interface QueryParams {
     name?: string;
     page: number;
 }
