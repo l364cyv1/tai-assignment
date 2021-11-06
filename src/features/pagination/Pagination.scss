@@ -1,0 +1,16 @@
+.pagination-container {
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  li {
+    margin: 10px;
+    button {
+      cursor: pointer;
+      &[disabled] {
+        cursor: not-allowed;
+      }
+      font-size: 12px;
+      padding: 8px 10px;
+    }
+  }
+}
