@@ -1,28 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import api from '../../app/api'
-
-export interface ItemInterface {
-    "id": number;
-    "name": string;
-    "status": string;
-    "species": string;
-    "type": string;
-    "gender": string;
-    "origin": {
-        "name":  string;
-        "url":  string;
-    },
-    "location": {
-        "name": string;
-        "url": string;
-    },
-    "image": string;
-    "episode": string[];
-    "url": string;
-    "created": string;
-}
-
-
+import { ItemInterface, QueryParams } from '../../app/interfaces';
 
 interface ItemsResponse {
     "info": {
@@ -34,9 +12,10 @@ interface ItemsResponse {
     results: ItemInterface[],
 }
 
-export interface QueryParams {
-    name?: string;
-    page: number;
+interface ItemsState {
+    items: ItemInterface[];
+    total: number;
+    status: string;
 }
 
 export const fetchItems = createAsyncThunk<
@@ -71,12 +50,6 @@ export const fetchItems = createAsyncThunk<
         }
     }
 );
-
-interface ItemsState {
-    items: ItemInterface[];
-    total: number;
-    status: string;
-}
 
 const initialState: ItemsState = {
     items: [],

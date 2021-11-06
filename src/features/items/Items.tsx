@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { fetchItems, QueryParams } from './itemSlice';
+import { fetchItems } from './itemSlice';
 import Item from './Item';
 import { useEffect, useRef } from 'react';
 import { goToPage } from '../pagination/paginationSlice';
@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import './Items.scss';
 import Loader from '../loader/Loader';
 import { isMinSearchValid } from '../../app/utils';
+import { QueryParams } from '../../app/interfaces';
 
 function Items () {
     const { items, status } = useAppSelector(state => state.items);
@@ -16,11 +17,8 @@ function Items () {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (isFirstRun.current) {
+        if (isFirstRun.current || !isMinSearchValid(search)) {
             isFirstRun.current = false;
-            return;
-        }
-        if (!isMinSearchValid(search)) {
             return;
         }
         if (pagination.page === 1) {
