@@ -1,13 +1,14 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import api from '../../app/api'
 import { ItemInterface, QueryParams } from '../../app/interfaces';
+import { error } from '../errorSlice';
 
 interface ItemsResponse {
-    "info": {
-        "count": number;
-        "pages": number;
-        "next": string;
-        "prev": string;
+    info: {
+        count: number;
+        pages: number;
+        next: string;
+        prev: string;
     },
     results: ItemInterface[],
 }
@@ -15,7 +16,8 @@ interface ItemsResponse {
 interface ItemsState {
     items: ItemInterface[];
     total: number;
-    status: string;
+    scroll: number;
+    loading: boolean;
 }
 
 export const fetchItems = createAsyncThunk<
@@ -28,6 +30,7 @@ export const fetchItems = createAsyncThunk<
     'fetchItems',
     async ({name , page}, {
         rejectWithValue,
+        dispatch
     }) => {
         try {
             let params: QueryParams = {
@@ -44,8 +47,18 @@ export const fetchItems = createAsyncThunk<
             } = await api.get<ItemsResponse>('/character', {
                 params
             });
+            dispatch(error({
+                error: false,
+                message: ''
+            }));
             return data;
         } catch (err: any) {
+            if (err?.response?.status !== 404) {
+                dispatch(error({
+                    error: true,
+                    message: 'Oops something went wrong while fetching characters.'
+                }));
+            }
             return rejectWithValue(err.response.status);
         }
     }
@@ -54,33 +67,43 @@ export const fetchItems = createAsyncThunk<
 const initialState: ItemsState = {
     items: [],
     total: 0,
-    status: 'loading',
+    scroll: 0,
+    loading: true,
 }
 
 const itemSlice = createSlice({
     name: 'items',
     initialState,
     reducers: {
-    //
+        loading(state, action) {
+            state.loading = action.payload;
+        },
+        scrollPosition (state, action) {
+            state.scroll = action.payload;
+        },
     },
     extraReducers: builder => {
         builder
         .addCase(fetchItems.pending, (state) => {
-            state.status = 'loading';
+            state.loading = true;
         })
         .addCase(fetchItems.fulfilled, (state, action: PayloadAction<ItemsResponse>) => {
             state.items = [...action.payload.results];
-            state.status = 'idle';
             state.total = action.payload.info.count;
+            state.loading = false;
         })
         .addCase(fetchItems.rejected, (state, action) => {
-            state.status = 'idle';
+            // search query had no matches
+            // empty view
             if (action.payload === 404) {
+                state.loading = false;
                 state.items = [];
                 state.total = 0;
             }
         });
     }
-})
+});
+
+export const { loading, scrollPosition } = itemSlice.actions;
 
 export default itemSlice.reducer;
