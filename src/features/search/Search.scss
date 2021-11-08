@@ -1,0 +1,12 @@
+.search-container {
+  position: relative;
+  .search-input {
+    width: 200px;
+    padding: 10px 15px;
+  }
+  .search-hint-message {
+    position: absolute;
+    font-size: 11px;
+    color: brown;
+  }
+}

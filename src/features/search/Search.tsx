@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { search } from './searchSlice';
 import { ChangeEvent, useState } from 'react';
 import { isMinSearchValid } from '../../app/utils';
-
+import './Search.scss';
 
 function Search() {
     const dispatch = useAppDispatch();
@@ -14,15 +14,16 @@ function Search() {
         dispatch(search(qTerm));
     }
     return (
-        <>
+        <div className="search-container">
             <input
+                className="search-input"
                 type="text"
                 onChange={handleSearchInput}
                 placeholder={"Search characters by name"}
                 defaultValue={q}
             />
-            { showHint && <p>Type at least 3 chars to filter characters.</p> }
-        </>
+            { showHint && <p className="search-hint-message">Type at least 3 chars to filter characters.</p> }
+        </div>
     );
 }
 
