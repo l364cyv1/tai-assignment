@@ -16,7 +16,7 @@ const Pagination: FC<{
     }
     pagination.push(
         <li key={ 'prev' }>
-            <button disabled={page === 1} onClick={ () => dispatch(prevPage()) }>previous</button>
+            <button disabled={page === 1} onClick={ () => dispatch(prevPage()) }>Previous</button>
         </li>
     );
     if (numOfPages <= 6) {
