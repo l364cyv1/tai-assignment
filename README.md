@@ -1,4 +1,4 @@
-## SIMPLE MOVIE APP
+## SIMPLE RICK AND MORTY APP
 
 ### How to run?
 
